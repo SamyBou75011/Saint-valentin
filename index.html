@@ -58,7 +58,7 @@
     .actions{
       position:relative;
       margin-top:24px;
-      height:140px;
+      height:150px;
       display:flex;
       align-items:flex-end;
       justify-content:center;
@@ -73,6 +73,8 @@
       cursor:pointer;
       box-shadow:0 16px 30px rgba(0,0,0,.12);
       transition: transform .15s ease, box-shadow .15s ease;
+      user-select:none;
+      touch-action: manipulation;
     }
     button:hover{
       transform: translateY(-2px);
@@ -87,9 +89,10 @@
       background:white;
       color:var(--no);
       border:2px solid #fecdd3;
+
       position:absolute;
       left:50%;
-      top:40px;
+      top:45px;
       transform:translateX(160px);
     }
 
@@ -110,7 +113,6 @@
       overflow:auto;
     }
     .overlay.show{display:block}
-
     .overlay h2{
       font-size: clamp(24px,4vw,34px);
       margin:6px 0 14px;
@@ -135,17 +137,11 @@
     }
     .pic:nth-child(odd){animation-delay:.15s}
     .pic:nth-child(even){animation-delay:.3s}
-
     @keyframes pop{
       from{opacity:0; transform:scale(.85)}
       to{opacity:1; transform:scale(1)}
     }
-
-    .pic img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
+    .pic img{width:100%; height:100%; object-fit:cover;}
 
     /* HEARTS */
     .heart{
@@ -158,13 +154,30 @@
       from{transform:translateY(10px) scale(.9); opacity:1}
       to{transform:translateY(-240px) scale(1.4); opacity:0}
     }
+
+    /* RAVEN (emoji) */
+    .raven{
+      position:absolute;
+      font-size:36px;
+      transform: translate(-50%,-50%);
+      z-index: 50;
+      pointer-events:none;
+      filter: drop-shadow(0 10px 10px rgba(0,0,0,.18));
+    }
+    .raven.swoop{
+      animation: swoop 420ms cubic-bezier(.2,.9,.2,1) forwards;
+    }
+    @keyframes swoop{
+      from{ transform: translate(-50%,-50%) scale(.9) rotate(-12deg); opacity:0 }
+      to  { transform: translate(-50%,-50%) scale(1.05) rotate(10deg); opacity:1 }
+    }
   </style>
 </head>
 
 <body>
 <canvas id="fx"></canvas>
 
-<div class="card">
+<div class="card" id="card">
   <div class="hello">Bonjour Mimi, 💘</div>
   <div class="question">Tu veux être mon amoureuse pour la vie ?</div>
 
@@ -194,24 +207,6 @@ const PHOTOS = [
   "photo5.jpg",
   "photo6.jpg"
 ];
-
-// NON s’échappe
-const noBtn = document.getElementById("no");
-const stage = document.getElementById("stage");
-function moveNo(){
-  const r = stage.getBoundingClientRect();
-  const b = noBtn.getBoundingClientRect();
-  const x = Math.random()*(r.width-b.width);
-  const y = Math.random()*(r.height-b.height);
-  noBtn.style.left = x+"px";
-  noBtn.style.top = y+"px";
-}
-["mouseenter","mousedown","touchstart","pointerdown"].forEach(e=>{
-  noBtn.addEventListener(e,ev=>{
-    ev.preventDefault();
-    moveNo();
-  },{passive:false});
-});
 
 // GALLERY
 const gallery = document.getElementById("gallery");
@@ -270,7 +265,84 @@ function animate(){
   if(particles.length) requestAnimationFrame(animate);
 }
 
-// YES CLICK
+// RAVEN GRAB NON
+const card = document.getElementById("card");
+const noBtn = document.getElementById("no");
+const stage = document.getElementById("stage");
+
+let grabbing = false;
+
+function randPosInsideStage(btnRect){
+  const r = stage.getBoundingClientRect();
+  const pad = 8;
+  const maxX = r.width - btnRect.width - pad;
+  const maxY = r.height - btnRect.height - pad;
+  const x = pad + Math.random() * Math.max(pad, maxX);
+  const y = pad + Math.random() * Math.max(pad, maxY);
+  return {x, y};
+}
+
+function spawnRavenAt(px, py){
+  const rv = document.createElement("div");
+  rv.className = "raven swoop";
+  rv.textContent = "🐦‍⬛"; // corbeau
+  rv.style.left = px + "px";
+  rv.style.top  = py + "px";
+  card.appendChild(rv);
+  setTimeout(()=>rv.remove(), 650);
+}
+
+function ravenGrabAndMove(){
+  if(grabbing) return;
+  grabbing = true;
+
+  // positions
+  const stageRect = stage.getBoundingClientRect();
+  const btnRect = noBtn.getBoundingClientRect();
+
+  // Raven appears slightly above the button (inside the card coordinates)
+  const ravenX = (btnRect.left - stageRect.left) + btnRect.width/2;
+  const ravenY = (btnRect.top  - stageRect.top ) - 10;
+
+  spawnRavenAt(ravenX, ravenY);
+
+  // "grab" effect: tiny shake
+  noBtn.animate([
+    { transform: "translateX(160px) rotate(0deg)" },
+    { transform: "translateX(160px) rotate(-6deg)" },
+    { transform: "translateX(160px) rotate(6deg)" },
+    { transform: "translateX(160px) rotate(0deg)" }
+  ], { duration: 260, easing: "ease-in-out" }).onfinish = () => {};
+
+  // Move the button to a new place (after a short delay to feel like the raven picked it)
+  setTimeout(()=>{
+    // Remove initial translate so left/top are absolute
+    noBtn.style.transform = "none";
+
+    const {x, y} = randPosInsideStage(btnRect);
+
+    // animate flight (button moves quickly)
+    noBtn.animate([
+      { left: (noBtn.offsetLeft) + "px", top: (noBtn.offsetTop) + "px" },
+      { left: x + "px", top: y + "px" }
+    ], { duration: 420, easing: "cubic-bezier(.2,.9,.2,1)", fill: "forwards" });
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top  = y + "px";
+
+    setTimeout(()=>{ grabbing = false; }, 450);
+  }, 160);
+}
+
+// Trigger on attempts
+["mouseenter","mousedown","touchstart","pointerdown","click"].forEach(evt=>{
+  noBtn.addEventListener(evt,(ev)=>{
+    ev.preventDefault();
+    ravenGrabAndMove();
+  },{passive:false});
+});
+
+// YES CLICK (great animation)
 const yesBtn=document.getElementById("yes");
 const overlay=document.getElementById("overlay");
 
@@ -285,11 +357,11 @@ yesBtn.addEventListener("click",e=>{
     {transform:"scale(1.4)", opacity:.9}
   ],{duration:600,easing:"cubic-bezier(.34,1.56,.64,1)",fill:"forwards"});
 
-  for(let i=0;i<40;i++){
+  for(let i=0;i<46;i++){
     setTimeout(()=>heart(
-      x+(Math.random()*220-110),
-      y+(Math.random()*140-70)
-    ),i*20);
+      x+(Math.random()*240-120),
+      y+(Math.random()*160-80)
+    ),i*18);
   }
   confetti(x,y);
 
@@ -307,7 +379,7 @@ yesBtn.addEventListener("click",e=>{
 });
 
 // start playful
-setTimeout(moveNo,400);
+setTimeout(()=>ravenGrabAndMove(), 500);
 </script>
 </body>
 </html>
