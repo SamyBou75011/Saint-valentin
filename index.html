@@ -58,7 +58,7 @@
     .actions{
       position:relative;
       margin-top:24px;
-      height:160px;
+      height:170px;
       display:flex;
       align-items:flex-end;
       justify-content:center;
@@ -86,33 +86,38 @@
       color:white;
     }
 
-    /* NON WRAPPER (the thing that moves) */
+    /* Wrapper that moves */
     #noWrap{
       position:absolute;
       left:50%;
-      top:48px;
+      top:52px;
       transform:translateX(160px);
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:6px 10px;
-      border-radius:999px;
+      width:max-content;
       pointer-events:auto;
     }
 
-    /* Raven is ALWAYS with the No button */
+    /* Raven sits ABOVE the button, hidden by default */
     .raven{
-      font-size:34px;
+      position:absolute;
+      left:50%;
+      top:-34px;               /* ABOVE the button */
+      transform:translateX(-50%) scale(.85) rotate(-10deg);
+      font-size:38px;
       line-height:1;
+      opacity:0;               /* hidden until grab */
+      pointer-events:none;
       filter: drop-shadow(0 10px 10px rgba(0,0,0,.18));
-      transform-origin: 50% 60%;
-      animation: flap 520ms ease-in-out infinite;
-      user-select:none;
     }
-    @keyframes flap{
-      0%{ transform: translateY(0px) rotate(-6deg) }
-      50%{ transform: translateY(-3px) rotate(8deg) }
-      100%{ transform: translateY(0px) rotate(-6deg) }
+
+    /* Show raven only during grab */
+    #noWrap.grab .raven{
+      opacity:1;
+      animation: grabPop 420ms cubic-bezier(.2,.9,.2,1) both;
+    }
+    @keyframes grabPop{
+      0%   { transform:translateX(-50%) translateY(-6px) scale(.75) rotate(-12deg); }
+      45%  { transform:translateX(-50%) translateY(0px)  scale(1.05) rotate(8deg); }
+      100% { transform:translateX(-50%) translateY(-2px) scale(.95) rotate(2deg); }
     }
 
     #no{
@@ -121,6 +126,7 @@
       border:2px solid #fecdd3;
       padding:18px 26px;
       font-size:20px;
+      font-weight:900;
       box-shadow:0 16px 30px rgba(0,0,0,.10);
     }
 
@@ -188,17 +194,16 @@
 <body>
 <canvas id="fx"></canvas>
 
-<div class="card" id="card">
+<div class="card">
   <div class="hello">Bonjour Mimi, 💘</div>
   <div class="question">Tu veux être mon amoureuse pour la vie ?</div>
 
   <div class="actions" id="stage">
     <button id="yes">OUIIIII 💞</button>
 
-    <!-- The moving wrapper contains the raven + the NO button -->
-    <div id="noWrap" aria-label="Non wrapper">
+    <div id="noWrap">
       <div class="raven" aria-hidden="true">🐦‍⬛</div>
-      <button id="no">Non 😅</button>
+      <button id="no" type="button">Non 😅</button>
     </div>
   </div>
 
@@ -211,13 +216,8 @@
 </div>
 
 <script>
-/* ================== PHOTOS ==================
-   Mets tes photos dans le même dossier
-*/
-const PHOTOS = [
-  "photo1.jpg","photo2.jpg","photo3.jpg",
-  "photo4.jpg","photo5.jpg","photo6.jpg"
-];
+/* ============== PHOTOS ============== */
+const PHOTOS = ["photo1.jpg","photo2.jpg","photo3.jpg","photo4.jpg","photo5.jpg","photo6.jpg"];
 
 // Gallery
 const gallery = document.getElementById("gallery");
@@ -276,31 +276,33 @@ function animate(){
   if(particles.length) requestAnimationFrame(animate);
 }
 
-// Raven carries the NO wrapper
+// NO moves with raven grab
 const noWrap = document.getElementById("noWrap");
-const noBtn = document.getElementById("no");
-const stage = document.getElementById("stage");
-
+const noBtn  = document.getElementById("no");
+const stage  = document.getElementById("stage");
 let moving = false;
 
-function moveNoWithRaven(){
+function moveNoWithGrab(){
   if(moving) return;
   moving = true;
 
+  // show raven only during the move
+  noWrap.classList.add("grab");
+
   const stageRect = stage.getBoundingClientRect();
   const wrapRect  = noWrap.getBoundingClientRect();
-
   const pad = 8;
+
   const maxX = stageRect.width  - wrapRect.width  - pad;
   const maxY = stageRect.height - wrapRect.height - pad;
 
   const x = pad + Math.random() * Math.max(pad, maxX);
   const y = pad + Math.random() * Math.max(pad, maxY);
 
-  // remove initial transform once we start
+  // remove initial translate after first move
   noWrap.style.transform = "none";
 
-  // animate wrapper move (raven stays attached automatically)
+  // animate wrapper move (raven is attached above)
   noWrap.animate([
     { left: (noWrap.offsetLeft) + "px", top: (noWrap.offsetTop) + "px" },
     { left: x + "px", top: y + "px" }
@@ -309,14 +311,18 @@ function moveNoWithRaven(){
   noWrap.style.left = x + "px";
   noWrap.style.top  = y + "px";
 
-  setTimeout(()=>moving=false, 440);
+  // hide raven after move
+  setTimeout(()=>{
+    noWrap.classList.remove("grab");
+    moving = false;
+  }, 520);
 }
 
-// Any attempt -> raven moves it
+// Trigger on attempts
 ["mouseenter","mousedown","touchstart","pointerdown","click"].forEach(evt=>{
   noBtn.addEventListener(evt,(ev)=>{
     ev.preventDefault();
-    moveNoWithRaven();
+    moveNoWithGrab();
   },{passive:false});
 });
 
@@ -355,9 +361,6 @@ yesBtn.addEventListener("click",e=>{
   noBtn.disabled=true;
   document.title="💖 Mimi a dit OUI";
 });
-
-// start playful
-setTimeout(moveNoWithRaven, 500);
 </script>
 </body>
 </html>
