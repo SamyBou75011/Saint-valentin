@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Saint-Valentin 💘</title>
+  <title>Pour Mimi 💘</title>
   <style>
     :root{
       --bg1:#fff0f6;
       --bg2:#f3f0ff;
-      --text:#1f2937;
-      --yes:#16a34a;
-      --no:#ef4444;
+      --text:#111827;
+      --yes:#22c55e;
+      --no:#fb7185;
       --card:#ffffffcc;
+      --shadow: 0 20px 60px rgba(31,41,55,.12);
     }
     *{box-sizing:border-box}
     body{
@@ -26,56 +27,165 @@
                   #fff;
       overflow:hidden;
     }
+    canvas{position:fixed; inset:0; pointer-events:none}
+
     .card{
-      width:min(720px, 92vw);
+      width:min(820px, 92vw);
       background:var(--card);
       backdrop-filter: blur(10px);
-      border:1px solid #ffffff;
-      border-radius:24px;
-      padding:28px 22px;
-      box-shadow: 0 20px 60px rgba(31,41,55,.12);
-      text-align:center;
+      border:1px solid #fff;
+      border-radius:28px;
+      padding:26px 22px 18px;
+      box-shadow: var(--shadow);
       position:relative;
+      overflow:hidden;
     }
-    h1{margin:6px 0 10px; font-size: clamp(24px, 4vw, 36px);}
-    p{margin:0 0 18px; font-size: clamp(16px, 2.4vw, 18px); opacity:.9}
-    .btnrow{
-      display:flex;
-      justify-content:center;
-      gap:14px;
+
+    .top{
+      text-align:center;
+      padding:10px 10px 0;
+    }
+    .hello{
+      font-size: clamp(20px, 3.2vw, 28px);
+      margin: 4px 0 8px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .question{
+      font-size: clamp(24px, 4.6vw, 40px);
+      margin: 0 0 10px;
+      font-weight: 900;
+      line-height: 1.05;
+    }
+    .sub{
+      margin:0;
+      font-size: 16px;
+      opacity:.85;
+    }
+
+    /* Buttons bottom */
+    .actions{
+      position:relative;
       margin-top:18px;
-      flex-wrap:wrap;
+      height:130px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      padding-bottom:8px;
     }
     button{
       border:0;
-      padding:14px 22px;
+      padding:18px 26px;
       border-radius:999px;
-      font-size:18px;
+      font-size:20px;
+      font-weight:800;
       cursor:pointer;
-      box-shadow: 0 12px 24px rgba(0,0,0,.08);
-      transition: transform .12s ease, box-shadow .12s ease;
+      box-shadow: 0 16px 30px rgba(0,0,0,.10);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
       user-select:none;
       touch-action: manipulation;
     }
-    button:hover{transform: translateY(-2px); box-shadow: 0 16px 30px rgba(0,0,0,.10)}
-    #yes{background: var(--yes); color:white}
-    #no{background: white; color: var(--no); border:2px solid #fecaca}
-    .stage{
-      position:relative;
-      height:92px;
-      margin-top:10px;
+    button:hover{transform: translateY(-2px); box-shadow: 0 20px 34px rgba(0,0,0,.12)}
+    #yes{background: linear-gradient(180deg, #34d399, var(--yes)); color:white}
+    #no{
+      background: white;
+      color: #fb7185;
+      border:2px solid #fecdd3;
     }
+
+    /* non button floating inside .actions */
     .floating-no{
       position:absolute;
       left:50%;
-      top:20px;
-      transform: translateX(70px);
+      top:38px;
+      transform: translateX(150px);
     }
-    .message{
-      margin-top:14px;
-      font-size:18px;
-      min-height:28px;
+
+    .hint{
+      text-align:center;
+      margin-top:6px;
+      font-size:14px;
+      opacity:.70;
+    }
+
+    /* result overlay */
+    .overlay{
+      position:absolute;
+      inset:0;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(10px);
+      display:none;
+      padding:18px;
+      overflow:auto;
+    }
+    .overlay.show{display:block}
+
+    .overlay h2{
+      margin:6px 0 8px;
+      font-size: clamp(22px, 4vw, 32px);
+      text-align:center;
+    }
+    .overlay .love{
+      text-align:center;
+      font-size:16px;
+      opacity:.9;
+      margin: 0 0 14px;
       font-weight:600;
+    }
+
+    /* gallery */
+    .gallery{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:10px;
+    }
+    @media (min-width: 720px){
+      .gallery{grid-template-columns: repeat(3, minmax(0, 1fr));}
+    }
+    .pic{
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow: 0 12px 26px rgba(0,0,0,.10);
+      border:1px solid rgba(255,255,255,.7);
+      position:relative;
+      aspect-ratio: 4 / 5;
+    }
+    .pic img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .cap{
+      position:absolute;
+      left:10px; right:10px; bottom:10px;
+      padding:8px 10px;
+      border-radius:14px;
+      background: rgba(255,255,255,.85);
+      font-size:13px;
+      font-weight:700;
+      line-height:1.2;
+    }
+
+    /* inside jokes */
+    .jokes{
+      margin-top:14px;
+      background: rgba(255,255,255,.8);
+      border:1px solid rgba(255,255,255,.9);
+      border-radius:20px;
+      padding:14px 14px 10px;
+      box-shadow: 0 12px 26px rgba(0,0,0,.08);
+    }
+    .jokes h3{
+      margin:0 0 8px;
+      font-size:16px;
+    }
+    .jokes ul{
+      margin:0;
+      padding-left:18px;
+      font-size:14px;
+      line-height:1.45;
     }
 
     /* hearts */
@@ -91,42 +201,72 @@
       from{ transform: translateY(10px) scale(.9); opacity:1 }
       to{ transform: translateY(-220px) scale(1.35); opacity:0 }
     }
-
-    /* confetti */
-    canvas{position:fixed; inset:0; pointer-events:none}
-
-    .small{font-size:14px; opacity:.75; margin-top:10px}
   </style>
 </head>
 <body>
   <canvas id="fx"></canvas>
 
   <div class="card" id="card">
-    <h1>Hey toi 💘</h1>
-    <p>J’ai une question ultra importante…</p>
-    <h1 style="margin-top:0">Tu veux être mon amoureuse ?</h1>
-
-    <div class="stage" id="stage">
-      <div class="btnrow" aria-label="Réponse">
-        <button id="yes" type="button">Oui</button>
-      </div>
-      <button id="no" class="floating-no" type="button" aria-label="Non">Non</button>
+    <div class="top">
+      <div class="hello">Bonjour Mimi, 💘</div>
+      <div class="question">Tu veux être mon amoureuse pour la vie ?</div>
+      <p class="sub">Promis je m’occupe du reste 😇</p>
     </div>
 
-    <div class="message" id="msg"></div>
-    <div class="small">PS : essaye de cliquer sur “Non” 😇</div>
+    <div class="actions" id="stage">
+      <button id="yes" type="button">OUIIIII 💞</button>
+      <button id="no" class="floating-no" type="button">Non 😅</button>
+    </div>
+
+    <div class="hint">PS : essaie de cliquer sur “Non” 😈</div>
+
+    <!-- overlay after YES -->
+    <div class="overlay" id="overlay" aria-live="polite">
+      <h2>ELLE A DIT OUI 💖</h2>
+      <div class="love" id="loveLine">Je t’aime fort Mimi. Merci pour notre année ensemble ✨</div>
+
+      <div class="gallery" id="gallery"></div>
+
+      <div class="jokes">
+        <h3>Nos petits délires / clins d’œil 😄</h3>
+        <ul id="jokesList"></ul>
+      </div>
+    </div>
   </div>
 
   <script>
+    // ========== PERSONNALISATION ==========
+    // 1) Mets tes images dans le même dossier que index.html
+    // 2) Remplace les filenames ci-dessous (ex: "mimi-01.jpg")
+    // 3) Ajoute/édite les légendes + vos délires
+    const PHOTOS = [
+      { src: "photo1.jpg", caption: "Notre premier truc mémorable ✨" },
+      { src: "photo2.jpg", caption: "Ce jour-là… 😭❤️" },
+      { src: "photo3.jpg", caption: "Notre délire préféré 😂" },
+      { src: "photo4.jpg", caption: "Toi, magnifique 💘" },
+      { src: "photo5.jpg", caption: "Nous 🫶" },
+      { src: "photo6.jpg", caption: "Encore un souvenir 💞" },
+    ];
+
+    const INSIDE_JOKES = [
+      "Le délire du ______ (à compléter)",
+      "Quand on a dit ______ et qu’on a explosé de rire",
+      "Notre phrase secrète : “______”",
+      "Le jour où ______ (et on s’en remet toujours pas)",
+    ];
+
+    // Message après le OUI (tu peux le modifier)
+    const YES_MESSAGE = "Je t’aime fort Mimi. Merci pour notre année ensemble ✨";
+    // =====================================
+
     // --- Non button evasion ---
     const noBtn = document.getElementById('no');
     const stage = document.getElementById('stage');
-    const msg = document.getElementById('msg');
 
     function moveNoButton() {
       const rect = stage.getBoundingClientRect();
       const btnRect = noBtn.getBoundingClientRect();
-      const pad = 8;
+      const pad = 6;
 
       const maxX = rect.width - btnRect.width - pad;
       const maxY = rect.height - btnRect.height - pad;
@@ -139,21 +279,59 @@
       noBtn.style.transform = 'none';
     }
 
-    // make it dodge on hover/touchstart/mousedown
     ['mouseenter','touchstart','pointerdown','mousedown'].forEach(evt => {
       noBtn.addEventListener(evt, (e) => {
         e.preventDefault();
         moveNoButton();
-        msg.textContent = "Hmm… pas si vite 😄";
       }, {passive:false});
     });
 
-    // --- YES animation ---
+    // --- YES animation + reveal overlay ---
     const yesBtn = document.getElementById('yes');
+    const overlay = document.getElementById('overlay');
+    const gallery = document.getElementById('gallery');
+    const jokesList = document.getElementById('jokesList');
+    const loveLine = document.getElementById('loveLine');
+
+    // setup overlay content
+    loveLine.textContent = YES_MESSAGE;
+
+    function renderGallery(){
+      gallery.innerHTML = "";
+      PHOTOS.forEach(p => {
+        const wrap = document.createElement("div");
+        wrap.className = "pic";
+
+        const img = document.createElement("img");
+        img.src = p.src;
+        img.alt = p.caption || "Souvenir";
+
+        const cap = document.createElement("div");
+        cap.className = "cap";
+        cap.textContent = p.caption || "";
+
+        wrap.appendChild(img);
+        wrap.appendChild(cap);
+        gallery.appendChild(wrap);
+      });
+    }
+
+    function renderJokes(){
+      jokesList.innerHTML = "";
+      INSIDE_JOKES.forEach(j => {
+        const li = document.createElement("li");
+        li.textContent = j;
+        jokesList.appendChild(li);
+      });
+    }
+
+    renderGallery();
+    renderJokes();
+
+    // confetti canvas
     const canvas = document.getElementById('fx');
     const ctx = canvas.getContext('2d');
     let W, H, rafId;
-
     function resize(){
       W = canvas.width = window.innerWidth * devicePixelRatio;
       H = canvas.height = window.innerHeight * devicePixelRatio;
@@ -172,14 +350,13 @@
       setTimeout(()=>heart.remove(), 1300);
     }
 
-    // Simple confetti particles
     const particles = [];
     function addConfettiBurst(cx, cy){
-      for(let i=0;i<140;i++){
+      for(let i=0;i<160;i++){
         particles.push({
           x: cx, y: cy,
           vx: (Math.random()*2-1) * (4 + Math.random()*5),
-          vy: (Math.random()*-1) * (6 + Math.random()*6),
+          vy: (Math.random()*-1) * (7 + Math.random()*6),
           g: 0.22 + Math.random()*0.18,
           r: 2 + Math.random()*3,
           a: 1,
@@ -193,7 +370,7 @@
     function runFX(){
       if(rafId) return;
       const start = performance.now();
-      const duration = 1800;
+      const duration = 1900;
 
       function tick(t){
         ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
@@ -215,7 +392,6 @@
           ctx.globalAlpha = Math.max(0,p.a);
           ctx.translate(p.x, p.y);
           ctx.rotate(p.rot);
-          // random-ish colors without hardcoding a palette
           ctx.fillStyle = `hsl(${(i*17)%360} 90% 55%)`;
           ctx.fillRect(-p.r, -p.r, p.r*2.2, p.r*2.2);
           ctx.restore();
@@ -234,30 +410,31 @@
     }
 
     yesBtn.addEventListener('click', (e)=>{
-      msg.textContent = "YESSSS 💞 Rendez-vous pour un date très bientôt 😘";
-      const x = e.clientX, y = e.clientY;
+      const x = e.clientX || window.innerWidth/2;
+      const y = e.clientY || window.innerHeight/2;
 
       // hearts burst
-      for(let i=0;i<18;i++){
+      for(let i=0;i<22;i++){
         setTimeout(()=>spawnHeart(
-          x + (Math.random()*120-60),
-          y + (Math.random()*60-30)
-        ), i*30);
+          x + (Math.random()*140-70),
+          y + (Math.random()*70-35)
+        ), i*28);
       }
-
       addConfettiBurst(x, y);
+
+      // show overlay
+      overlay.classList.add("show");
 
       // disable buttons
       yesBtn.disabled = true;
       noBtn.disabled = true;
       yesBtn.style.opacity = 0.95;
-      noBtn.style.opacity = 0.55;
+      noBtn.style.opacity = 0.6;
 
-      // Optional: change title
-      document.title = "💖 Elle a dit OUI !";
+      document.title = "💖 Mimi a dit OUI";
     });
 
-    // initial random move so it's playful
+    // playful start
     setTimeout(moveNoButton, 400);
   </script>
 </body>
