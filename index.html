@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Pour Mimi 💘</title>
+
   <style>
     :root{
       --bg1:#fff0f6;
@@ -20,11 +21,12 @@
       min-height:100vh;
       display:grid;
       place-items:center;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color:var(--text);
-      background: radial-gradient(1200px 800px at 20% 10%, var(--bg1), transparent 60%),
-                  radial-gradient(1200px 800px at 80% 90%, var(--bg2), transparent 60%),
-                  #fff;
+      background:
+        radial-gradient(1200px 800px at 20% 10%, var(--bg1), transparent 60%),
+        radial-gradient(1200px 800px at 80% 90%, var(--bg2), transparent 60%),
+        #fff;
       overflow:hidden;
     }
     canvas{position:fixed; inset:0; pointer-events:none}
@@ -33,409 +35,279 @@
       width:min(820px, 92vw);
       background:var(--card);
       backdrop-filter: blur(10px);
-      border:1px solid #fff;
       border-radius:28px;
       padding:26px 22px 18px;
       box-shadow: var(--shadow);
       position:relative;
       overflow:hidden;
+      text-align:center;
     }
 
-    .top{
-      text-align:center;
-      padding:10px 10px 0;
-    }
     .hello{
-      font-size: clamp(20px, 3.2vw, 28px);
-      margin: 4px 0 8px;
-      font-weight: 700;
-      letter-spacing: .2px;
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight:700;
+      margin-bottom:6px;
     }
     .question{
-      font-size: clamp(24px, 4.6vw, 40px);
-      margin: 0 0 10px;
-      font-weight: 900;
-      line-height: 1.05;
-    }
-    .sub{
-      margin:0;
-      font-size: 16px;
-      opacity:.85;
+      font-size: clamp(26px, 4.8vw, 42px);
+      font-weight:900;
+      line-height:1.1;
+      margin:0 0 10px;
     }
 
-    /* Buttons bottom */
     .actions{
       position:relative;
-      margin-top:18px;
-      height:130px;
+      margin-top:24px;
+      height:140px;
       display:flex;
       align-items:flex-end;
       justify-content:center;
-      padding-bottom:8px;
-    }
-    button{
-      border:0;
-      padding:18px 26px;
-      border-radius:999px;
-      font-size:20px;
-      font-weight:800;
-      cursor:pointer;
-      box-shadow: 0 16px 30px rgba(0,0,0,.10);
-      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-      user-select:none;
-      touch-action: manipulation;
-    }
-    button:hover{transform: translateY(-2px); box-shadow: 0 20px 34px rgba(0,0,0,.12)}
-    #yes{background: linear-gradient(180deg, #34d399, var(--yes)); color:white}
-    #no{
-      background: white;
-      color: #fb7185;
-      border:2px solid #fecdd3;
     }
 
-    /* non button floating inside .actions */
-    .floating-no{
+    button{
+      border:0;
+      padding:20px 30px;
+      border-radius:999px;
+      font-size:22px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 16px 30px rgba(0,0,0,.12);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    button:hover{
+      transform: translateY(-2px);
+      box-shadow:0 22px 36px rgba(0,0,0,.16);
+    }
+
+    #yes{
+      background:linear-gradient(180deg,#34d399,var(--yes));
+      color:white;
+    }
+    #no{
+      background:white;
+      color:var(--no);
+      border:2px solid #fecdd3;
       position:absolute;
       left:50%;
-      top:38px;
-      transform: translateX(150px);
+      top:40px;
+      transform:translateX(160px);
     }
 
     .hint{
-      text-align:center;
-      margin-top:6px;
+      margin-top:8px;
       font-size:14px;
-      opacity:.70;
+      opacity:.7;
     }
 
-    /* result overlay */
+    /* OVERLAY */
     .overlay{
       position:absolute;
       inset:0;
-      background: rgba(255,255,255,.92);
+      background:rgba(255,255,255,.94);
       backdrop-filter: blur(10px);
       display:none;
-      padding:18px;
+      padding:20px;
       overflow:auto;
     }
     .overlay.show{display:block}
 
     .overlay h2{
-      margin:6px 0 8px;
-      font-size: clamp(22px, 4vw, 32px);
-      text-align:center;
-    }
-    .overlay .love{
-      text-align:center;
-      font-size:16px;
-      opacity:.9;
-      margin: 0 0 14px;
-      font-weight:600;
+      font-size: clamp(24px,4vw,34px);
+      margin:6px 0 14px;
     }
 
-    /* gallery */
+    /* GALLERY */
     .gallery{
       display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:10px;
+      grid-template-columns: repeat(2,1fr);
+      gap:12px;
     }
-    @media (min-width: 720px){
-      .gallery{grid-template-columns: repeat(3, minmax(0, 1fr));}
+    @media (min-width:720px){
+      .gallery{grid-template-columns: repeat(3,1fr);}
     }
     .pic{
+      aspect-ratio:4/5;
       border-radius:18px;
       overflow:hidden;
-      background:#fff;
-      box-shadow: 0 12px 26px rgba(0,0,0,.10);
-      border:1px solid rgba(255,255,255,.7);
-      position:relative;
-      aspect-ratio: 4 / 5;
+      box-shadow:0 14px 30px rgba(0,0,0,.15);
+      animation: pop 0.8s ease forwards;
+      opacity:0;
     }
+    .pic:nth-child(odd){animation-delay:.15s}
+    .pic:nth-child(even){animation-delay:.3s}
+
+    @keyframes pop{
+      from{opacity:0; transform:scale(.85)}
+      to{opacity:1; transform:scale(1)}
+    }
+
     .pic img{
       width:100%;
       height:100%;
       object-fit:cover;
-      display:block;
-    }
-    .cap{
-      position:absolute;
-      left:10px; right:10px; bottom:10px;
-      padding:8px 10px;
-      border-radius:14px;
-      background: rgba(255,255,255,.85);
-      font-size:13px;
-      font-weight:700;
-      line-height:1.2;
     }
 
-    /* inside jokes */
-    .jokes{
-      margin-top:14px;
-      background: rgba(255,255,255,.8);
-      border:1px solid rgba(255,255,255,.9);
-      border-radius:20px;
-      padding:14px 14px 10px;
-      box-shadow: 0 12px 26px rgba(0,0,0,.08);
-    }
-    .jokes h3{
-      margin:0 0 8px;
-      font-size:16px;
-    }
-    .jokes ul{
-      margin:0;
-      padding-left:18px;
-      font-size:14px;
-      line-height:1.45;
-    }
-
-    /* hearts */
+    /* HEARTS */
     .heart{
       position:fixed;
-      font-size: 22px;
-      will-change: transform, opacity;
+      font-size:24px;
       pointer-events:none;
       animation: floatUp 1200ms ease-out forwards;
-      filter: drop-shadow(0 10px 12px rgba(0,0,0,.10));
     }
     @keyframes floatUp{
-      from{ transform: translateY(10px) scale(.9); opacity:1 }
-      to{ transform: translateY(-220px) scale(1.35); opacity:0 }
+      from{transform:translateY(10px) scale(.9); opacity:1}
+      to{transform:translateY(-240px) scale(1.4); opacity:0}
     }
   </style>
 </head>
+
 <body>
-  <canvas id="fx"></canvas>
+<canvas id="fx"></canvas>
 
-  <div class="card" id="card">
-    <div class="top">
-      <div class="hello">Bonjour Mimi, 💘</div>
-      <div class="question">Tu veux être mon amoureuse pour la vie ?</div>
-      <p class="sub">Promis je m’occupe du reste 😇</p>
-    </div>
+<div class="card">
+  <div class="hello">Bonjour Mimi, 💘</div>
+  <div class="question">Tu veux être mon amoureuse pour la vie ?</div>
 
-    <div class="actions" id="stage">
-      <button id="yes" type="button">OUIIIII 💞</button>
-      <button id="no" class="floating-no" type="button">Non 😅</button>
-    </div>
-
-    <div class="hint">PS : essaie de cliquer sur “Non” 😈</div>
-
-    <!-- overlay after YES -->
-    <div class="overlay" id="overlay" aria-live="polite">
-      <h2>ELLE A DIT OUI 💖</h2>
-      <div class="love" id="loveLine">Je t’aime fort Mimi. Merci pour notre année ensemble ✨</div>
-
-      <div class="gallery" id="gallery"></div>
-
-      <div class="jokes">
-        <h3>Nos petits délires / clins d’œil 😄</h3>
-        <ul id="jokesList"></ul>
-      </div>
-    </div>
+  <div class="actions" id="stage">
+    <button id="yes">OUIIIII 💞</button>
+    <button id="no">Non 😅</button>
   </div>
 
-  <script>
-    // ========== PERSONNALISATION ==========
-    // 1) Mets tes images dans le même dossier que index.html
-    // 2) Remplace les filenames ci-dessous (ex: "mimi-01.jpg")
-    // 3) Ajoute/édite les légendes + vos délires
-    const PHOTOS = [
-      { src: "photo1.jpg", caption: "Notre premier truc mémorable ✨" },
-      { src: "photo2.jpg", caption: "Ce jour-là… 😭❤️" },
-      { src: "photo3.jpg", caption: "Notre délire préféré 😂" },
-      { src: "photo4.jpg", caption: "Toi, magnifique 💘" },
-      { src: "photo5.jpg", caption: "Nous 🫶" },
-      { src: "photo6.jpg", caption: "Encore un souvenir 💞" },
-    ];
+  <div class="hint">PS : essaye de cliquer sur “Non” 😈</div>
 
-    const INSIDE_JOKES = [
-      "Le délire du ______ (à compléter)",
-      "Quand on a dit ______ et qu’on a explosé de rire",
-      "Notre phrase secrète : “______”",
-      "Le jour où ______ (et on s’en remet toujours pas)",
-    ];
+  <div class="overlay" id="overlay">
+    <h2>Elle a dit OUI 💖</h2>
+    <div class="gallery" id="gallery"></div>
+  </div>
+</div>
 
-    // Message après le OUI (tu peux le modifier)
-    const YES_MESSAGE = "Je t’aime fort Mimi. Merci pour notre année ensemble ✨";
-    // =====================================
+<script>
+/* ================== PHOTOS ==================
+   Mets tes photos dans le même dossier
+   Exemples : photo1.jpg, photo2.jpg, etc.
+*/
+const PHOTOS = [
+  "photo1.jpg",
+  "photo2.jpg",
+  "photo3.jpg",
+  "photo4.jpg",
+  "photo5.jpg",
+  "photo6.jpg"
+];
 
-    // --- Non button evasion ---
-    const noBtn = document.getElementById('no');
-    const stage = document.getElementById('stage');
+// NON s’échappe
+const noBtn = document.getElementById("no");
+const stage = document.getElementById("stage");
+function moveNo(){
+  const r = stage.getBoundingClientRect();
+  const b = noBtn.getBoundingClientRect();
+  const x = Math.random()*(r.width-b.width);
+  const y = Math.random()*(r.height-b.height);
+  noBtn.style.left = x+"px";
+  noBtn.style.top = y+"px";
+}
+["mouseenter","mousedown","touchstart","pointerdown"].forEach(e=>{
+  noBtn.addEventListener(e,ev=>{
+    ev.preventDefault();
+    moveNo();
+  },{passive:false});
+});
 
-    function moveNoButton() {
-      const rect = stage.getBoundingClientRect();
-      const btnRect = noBtn.getBoundingClientRect();
-      const pad = 6;
+// GALLERY
+const gallery = document.getElementById("gallery");
+PHOTOS.forEach(src=>{
+  const d=document.createElement("div");
+  d.className="pic";
+  const i=document.createElement("img");
+  i.src=src;
+  d.appendChild(i);
+  gallery.appendChild(d);
+});
 
-      const maxX = rect.width - btnRect.width - pad;
-      const maxY = rect.height - btnRect.height - pad;
+// HEARTS + CONFETTI
+const canvas=document.getElementById("fx");
+const ctx=canvas.getContext("2d");
+function resize(){
+  canvas.width=innerWidth*devicePixelRatio;
+  canvas.height=innerHeight*devicePixelRatio;
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+addEventListener("resize",resize); resize();
 
-      const x = Math.max(pad, Math.random() * maxX);
-      const y = Math.max(pad, Math.random() * maxY);
+function heart(x,y){
+  const h=document.createElement("div");
+  h.className="heart";
+  h.textContent=Math.random()>0.5?"💖":"💘";
+  h.style.left=x+"px";
+  h.style.top=y+"px";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),1200);
+}
 
-      noBtn.style.left = x + 'px';
-      noBtn.style.top  = y + 'px';
-      noBtn.style.transform = 'none';
-    }
-
-    ['mouseenter','touchstart','pointerdown','mousedown'].forEach(evt => {
-      noBtn.addEventListener(evt, (e) => {
-        e.preventDefault();
-        moveNoButton();
-      }, {passive:false});
+const particles=[];
+function confetti(x,y){
+  for(let i=0;i<180;i++){
+    particles.push({
+      x,y,
+      vx:(Math.random()*2-1)*6,
+      vy:(Math.random()*-1)*8,
+      g:0.25,
+      a:1
     });
+  }
+  animate();
+}
+function animate(){
+  ctx.clearRect(0,0,innerWidth,innerHeight);
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.a-=0.01;
+    if(p.a<=0){particles.splice(i,1); continue;}
+    ctx.globalAlpha=p.a;
+    ctx.fillStyle=`hsl(${i*17%360} 90% 60%)`;
+    ctx.fillRect(p.x,p.y,4,4);
+  }
+  if(particles.length) requestAnimationFrame(animate);
+}
 
-    // --- YES animation + reveal overlay ---
-    const yesBtn = document.getElementById('yes');
-    const overlay = document.getElementById('overlay');
-    const gallery = document.getElementById('gallery');
-    const jokesList = document.getElementById('jokesList');
-    const loveLine = document.getElementById('loveLine');
+// YES CLICK
+const yesBtn=document.getElementById("yes");
+const overlay=document.getElementById("overlay");
 
-    // setup overlay content
-    loveLine.textContent = YES_MESSAGE;
+yesBtn.addEventListener("click",e=>{
+  const x=e.clientX||innerWidth/2;
+  const y=e.clientY||innerHeight/2;
 
-    function renderGallery(){
-      gallery.innerHTML = "";
-      PHOTOS.forEach(p => {
-        const wrap = document.createElement("div");
-        wrap.className = "pic";
+  yesBtn.animate([
+    {transform:"scale(1)"},
+    {transform:"scale(1.2)"},
+    {transform:"scale(.9)"},
+    {transform:"scale(1.4)", opacity:.9}
+  ],{duration:600,easing:"cubic-bezier(.34,1.56,.64,1)",fill:"forwards"});
 
-        const img = document.createElement("img");
-        img.src = p.src;
-        img.alt = p.caption || "Souvenir";
+  for(let i=0;i<40;i++){
+    setTimeout(()=>heart(
+      x+(Math.random()*220-110),
+      y+(Math.random()*140-70)
+    ),i*20);
+  }
+  confetti(x,y);
 
-        const cap = document.createElement("div");
-        cap.className = "cap";
-        cap.textContent = p.caption || "";
+  setTimeout(()=>{
+    overlay.classList.add("show");
+    overlay.animate([
+      {opacity:0, transform:"scale(1.1)"},
+      {opacity:1, transform:"scale(1)"}
+    ],{duration:800,easing:"ease-out",fill:"forwards"});
+  },550);
 
-        wrap.appendChild(img);
-        wrap.appendChild(cap);
-        gallery.appendChild(wrap);
-      });
-    }
+  yesBtn.disabled=true;
+  noBtn.disabled=true;
+  document.title="💖 Mimi a dit OUI";
+});
 
-    function renderJokes(){
-      jokesList.innerHTML = "";
-      INSIDE_JOKES.forEach(j => {
-        const li = document.createElement("li");
-        li.textContent = j;
-        jokesList.appendChild(li);
-      });
-    }
-
-    renderGallery();
-    renderJokes();
-
-    // confetti canvas
-    const canvas = document.getElementById('fx');
-    const ctx = canvas.getContext('2d');
-    let W, H, rafId;
-    function resize(){
-      W = canvas.width = window.innerWidth * devicePixelRatio;
-      H = canvas.height = window.innerHeight * devicePixelRatio;
-      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    function spawnHeart(x, y){
-      const heart = document.createElement('div');
-      heart.className = 'heart';
-      heart.textContent = Math.random() > 0.5 ? '💖' : '💘';
-      heart.style.left = x + 'px';
-      heart.style.top  = y + 'px';
-      document.body.appendChild(heart);
-      setTimeout(()=>heart.remove(), 1300);
-    }
-
-    const particles = [];
-    function addConfettiBurst(cx, cy){
-      for(let i=0;i<160;i++){
-        particles.push({
-          x: cx, y: cy,
-          vx: (Math.random()*2-1) * (4 + Math.random()*5),
-          vy: (Math.random()*-1) * (7 + Math.random()*6),
-          g: 0.22 + Math.random()*0.18,
-          r: 2 + Math.random()*3,
-          a: 1,
-          rot: Math.random()*Math.PI,
-          vr: (Math.random()*2-1)*0.18
-        });
-      }
-      runFX();
-    }
-
-    function runFX(){
-      if(rafId) return;
-      const start = performance.now();
-      const duration = 1900;
-
-      function tick(t){
-        ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
-
-        for(let i=particles.length-1;i>=0;i--){
-          const p = particles[i];
-          p.vy += p.g;
-          p.x += p.vx;
-          p.y += p.vy;
-          p.rot += p.vr;
-          p.a -= 0.008;
-
-          if(p.a <= 0 || p.y > window.innerHeight + 30){
-            particles.splice(i,1);
-            continue;
-          }
-
-          ctx.save();
-          ctx.globalAlpha = Math.max(0,p.a);
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.rot);
-          ctx.fillStyle = `hsl(${(i*17)%360} 90% 55%)`;
-          ctx.fillRect(-p.r, -p.r, p.r*2.2, p.r*2.2);
-          ctx.restore();
-        }
-
-        if(particles.length && (t - start) < duration){
-          rafId = requestAnimationFrame(tick);
-        } else {
-          cancelAnimationFrame(rafId);
-          rafId = null;
-          ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
-          particles.length = 0;
-        }
-      }
-      rafId = requestAnimationFrame(tick);
-    }
-
-    yesBtn.addEventListener('click', (e)=>{
-      const x = e.clientX || window.innerWidth/2;
-      const y = e.clientY || window.innerHeight/2;
-
-      // hearts burst
-      for(let i=0;i<22;i++){
-        setTimeout(()=>spawnHeart(
-          x + (Math.random()*140-70),
-          y + (Math.random()*70-35)
-        ), i*28);
-      }
-      addConfettiBurst(x, y);
-
-      // show overlay
-      overlay.classList.add("show");
-
-      // disable buttons
-      yesBtn.disabled = true;
-      noBtn.disabled = true;
-      yesBtn.style.opacity = 0.95;
-      noBtn.style.opacity = 0.6;
-
-      document.title = "💖 Mimi a dit OUI";
-    });
-
-    // playful start
-    setTimeout(moveNoButton, 400);
-  </script>
+// start playful
+setTimeout(moveNo,400);
+</script>
 </body>
 </html>
